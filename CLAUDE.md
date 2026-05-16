@@ -56,6 +56,9 @@ npm run build && npm run start
 3. **Ingest / Reflect 是非同步 job**：Route 寫 `data/jobs/{id}.json` 後立刻回 job id，worker 在背景跑並更新 progress；前端輪詢 `/api/jobs/{id}`。新增長時間任務沿用這個模式。
 4. **每次寫入都觸發 git sync 與 audit log**：`storage/wiki_fs.py` 寫檔後呼叫 `scripts/git_sync.sh`，並寫一筆 `audit.db`。所有變更操作都必須記 audit（`action` 欄位見 `ARCHITECTURE.md` §3.3）。
 5. **PDF Ingest 流程要圖文並茂**：用 PyMuPDF 把每頁轉 200 DPI PNG 存 `raw/assets/`，產出的 wiki 頁面以 `![[圖片名.png]]` 嵌入 — **不可純文字**。
+   - **掃描版 PDF 自動 OCR**：`ingest_worker.py` 讀完文字層後，若總字數 < 100 或唯一頁數 ≤ 2（代表全頁都是重複水印），自動啟用 OCR fallback，呼叫 `smartledger-paddleocr` 微服務（`OCR_SERVICE_URL` 環境變數）逐頁辨識，再以高頻詞過濾廣告水印後送 LLM。
+   - **PaddleOCR 注意事項**：圖片必須先縮到 1200px 寬再送，否則 OOM；`ocr.ocr()` 是同步 blocking，須用 `asyncio.to_thread` 包裝；healthcheck 用 curl 而非 python requests。
+   - **LLM max_tokens**：ingest 設為 16000，低於這個值時 LLM 讀完現有 wiki 後會因 token 耗盡而無法呼叫 write_page。
 6. **權限三層**：`admin` / `employee` / `guest`，由 `auth/jwt.py` 簽發 token，`middleware.ts` 在 frontend 做路由守門，backend route 內再驗一次。不要只信前端守門。
 
 ## 規範

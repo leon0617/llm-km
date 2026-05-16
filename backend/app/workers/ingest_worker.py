@@ -100,9 +100,29 @@ async def run_ingest(job_id: str, file_path: Path, filename: str) -> None:
                 page_texts = ocr_texts
                 log(f"OCR 完成：共 {len(page_texts)} 頁")
 
+                from collections import Counter
+                segment_freq: Counter = Counter()
+                for t in page_texts:
+                    for seg in t.split():
+                        segment_freq[seg] += 1
+                spam_threshold = len(page_texts) * 0.6
+                spam_words = {w for w, c in segment_freq.items() if c >= spam_threshold and len(w) > 1}
+
+                cleaned: list[str] = []
+                for t in page_texts:
+                    filtered = " ".join(w for w in t.split() if w not in spam_words)
+                    cleaned.append(filtered.strip())
+                page_texts = cleaned
+                log(f"廣告過濾完成，有效頁數：{sum(1 for t in page_texts if len(t) > 20)}")
+
             source_text = "\n\n".join(
-                f"[第 {i+1} 頁]\n{t}" for i, t in enumerate(page_texts)
+                f"[第 {i+1} 頁]\n{t}" for i, t in enumerate(page_texts) if t.strip()
             )
+            if len(source_text) > 40000:
+                meaningful = [(i, t) for i, t in enumerate(page_texts) if len(t.strip()) > 50]
+                sampled = meaningful[:80]
+                source_text = "\n\n".join(f"[第 {i+1} 頁]\n{t}" for i, t in sampled)
+                log(f"內容過長，取前 {len(sampled)} 頁有效內容（共 {len(meaningful)} 頁有文字）")
         else:
             source_text = file_path.read_text(encoding="utf-8", errors="replace")
 
@@ -142,7 +162,7 @@ async def run_ingest(job_id: str, file_path: Path, filename: str) -> None:
 
 ---
 **來源文件內容**：
-{source_text[:40000]}"""  # cap at 40K chars
+{source_text}"""
 
         job_store.update_job(job_id, step="LLM 分析中", progress=0.40)
         log("呼叫 LLM")
@@ -160,7 +180,7 @@ async def run_ingest(job_id: str, file_path: Path, filename: str) -> None:
                 system=prompts.INGEST_SYSTEM,
                 messages=messages,
                 tools=tools.INGEST_TOOLS,
-                max_tokens=8192,
+                max_tokens=16000,
                 tier=settings.route_ingest,
                 force_provider=pinned_provider,
             )
@@ -168,9 +188,9 @@ async def run_ingest(job_id: str, file_path: Path, filename: str) -> None:
                 pinned_provider = final.provider_name
             messages.append({"role": "assistant", "raw": final.raw_assistant_message})
 
+            log(f"turn {turn}: stop_reason={final.stop_reason}, tools={[tc.name for tc in final.tool_calls]}")
             if final.stop_reason == "end_turn":
-                # Guard: if LLM ended without writing any page, inject a
-                # reminder and give it one more chance to call write_page.
+                log(f"LLM end_turn（turn={turn}，已建頁={pages_created}，text長度={len(str(final.raw_assistant_message)[:200])}）")
                 if not pages_created and turn == 0:
                     log("LLM 未呼叫 write_page，補發強制提示")
                     messages.append({

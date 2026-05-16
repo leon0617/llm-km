@@ -240,26 +240,51 @@ Frontend 渲染 Markdown，wiki link 變成可點選跳轉
 ### 4.2 Ingest 流程
 
 ```
-User 上傳檔案（PDF/TXT/MD）
-  ↓
-Frontend POST /api/ingest (multipart)
-  ↓
-Backend:
-  1. 存原始檔到 /data/raw/{年月}/{原檔名}
-  2. 建立 job，回 job_id 給前端
-  3. 前端輪詢 /api/jobs/{id} 顯示進度
-  4. ingest_worker 非同步：
-     ├─ 若是 PDF：pymupdf 轉每頁 200 DPI PNG → /data/raw/assets/
-     ├─ 讀取現有 wiki/index.md（讓 LLM 知道已有什麼）
-     ├─ 呼叫 Claude（含 ingest system prompt + Tool Use）：
-     │    ├─ Claude 讀完內容後，決定要建立哪些頁
-     │    ├─ 用 write_page tool 寫入 source_*.md
-     │    ├─ 視情況 write_page entity_*.md, concept_*.md
-     │    └─ update_index、append_log
-     ├─ git commit + push
-     └─ 更新 job status = completed
-  5. 前端顯示「成功 ingest，已建立 N 頁，點此查看」
+ User 上傳檔案（PDF/TXT/MD）
+   ↓
+ Frontend POST /api/ingest (multipart)
+   ↓
+ Backend:
+   1. 存原始檔到 /data/raw/{年月}/{原檔名}
+   2. 建立 job，回 job_id 給前端
+   3. 前端輪詢 /api/jobs/{id} 顯示進度
+   4. ingest_worker 非同步：
+      ├─ 若是 PDF：pymupdf 轉每頁 200 DPI PNG → /data/raw/assets/
+      ├─ 讀取 PDF 文字層（fitz.get_text()）
+      ├─ 掃描版 PDF 偵測：若總字數 < 100 或唯一頁數 ≤ 2（全頁文字幾乎相同），
+      │   視為掃描版，啟用 OCR fallback：
+      │   ├─ 將每頁 PNG 縮到 1200px 寬（避免 OOM）
+      │   ├─ POST /api/ocr/extract 到 PaddleOCR 微服務（smartledger-paddleocr）
+      │   ├─ 以高頻詞過濾廣告水印（出現於 ≥ 60% 頁面的詞彙視為廣告）
+      │   └─ 內容過長時只取前 80 頁有意義的頁面送給 LLM
+      ├─ 讀取現有 wiki/index.md（讓 LLM 知道已有什麼）
+      ├─ 呼叫 LLM（含 ingest system prompt + Tool Use，max_tokens=16000）：
+      │    ├─ LLM 讀完內容後，決定要建立哪些頁
+      │    ├─ 用 write_page tool 寫入 source_*.md
+      │    ├─ 視情況 write_page entity_*.md, concept_*.md
+      │    └─ update_index、append_log
+      ├─ git commit + push
+      └─ 更新 job status = completed
+   5. 前端顯示「成功 ingest，已建立 N 頁，點此查看」
 ```
+
+### 4.2.1 OCR 微服務（PaddleOCR）
+
+掃描版 PDF 的文字層為空或只有浮水印，需要 OCR 才能取得內容。
+
+| 項目 | 說明 |
+|---|---|
+| 服務 | `smartledger-paddleocr` container（SmartLedger 專案共用） |
+| 端口 | host `8001`，docker network 內 `smartledger-paddleocr:8000` |
+| API | `POST /api/ocr/extract`，input: image file，output: `{success, texts:[{text, confidence, bbox}]}` |
+| 語言模型 | `lang='ch'`，支援繁體中文 |
+| 網路 | llm-km backend 加入 `llm-km_default` network，smartledger-paddleocr 也加入同一 network |
+| 環境變數 | `OCR_SERVICE_URL=http://smartledger-paddleocr:8000` |
+
+**踩過的坑：**
+- 圖片原始尺寸 3000×4056，直接送 OCR 會 OOM（exit 137）→ 縮到 1200px 寬再送
+- PaddleOCR `ocr.ocr()` 是同步 blocking，必須用 `asyncio.to_thread` 包裝，否則 uvicorn event loop 卡死
+- healthcheck 若用 `python -c "requests.get(...)"` 在 OCR 處理期間會超時導致 container 重啟 → 改用 `curl`
 
 ### 4.3 Reflect / Lint / Scan（管理員）
 
