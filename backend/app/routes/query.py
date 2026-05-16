@@ -79,13 +79,19 @@ async def _stream_query(
         # Pick tier based on query characteristics + history depth
         chosen_tier = resolve_tier(settings.route_query, question, len(history))
 
+        is_wiki_query = (chosen_tier == "premium")
+
         if is_first_turn:
-            messages: list[dict[str, Any]] = [{
-                "role": "user",
-                "content": f"wiki/index.md 內容供參考：\n{index_content}\n\n---\n\n問題：{question}"
-            }]
+            if is_wiki_query:
+                first_msg = f"wiki/index.md 內容供參考：\n{index_content}\n\n---\n\n問題：{question}"
+            else:
+                first_msg = question
+            messages: list[dict[str, Any]] = [{"role": "user", "content": first_msg}]
         else:
             messages = history + [{"role": "user", "content": question}]
+
+        active_system = prompts.QUERY_SYSTEM if is_wiki_query else prompts.GENERAL_CHAT_SYSTEM
+        active_tools = tools.QUERY_TOOLS if is_wiki_query else None
 
         pages_read: list[str] = []
         tool_calls_count = 0
@@ -96,9 +102,9 @@ async def _stream_query(
         for turn in range(MAX_TURNS):
             final: FinalResponse | None = None
             async for event in llm_stream(
-                system=prompts.QUERY_SYSTEM,
+                system=active_system,
                 messages=messages,
-                tools=tools.QUERY_TOOLS,
+                tools=active_tools,
                 max_tokens=4096,
                 actor=actor,
                 tier=chosen_tier,
