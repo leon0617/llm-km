@@ -144,7 +144,7 @@ function LoginForm() {
 
             <div className="form-foot">
 <span>© 2026 LLM Wiki</span>
-<span>llm-wiki.example.com</span>
+<span>leonl-km.lbest.online</span>
             </div>
           </div>
         </div>

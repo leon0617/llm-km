@@ -53,7 +53,7 @@ export default function AppShell({ children, crumbs, hideSidebar = false }: Prop
       <footer className="app-foot">
         <div className="left">
           <span className="stat-dot">服務正常</span>
-          <span>llm-wiki.example.com</span>
+          <span>leonl-km.lbest.online</span>
         </div>
         <div className="right">
           <span>v1.0.0</span>
