@@ -1,0 +1,149 @@
+/* ============================================================================
+   Athena Design System — Tokens bridge for the HTML preview
+   ----------------------------------------------------------------------------
+   This file is a THIN BRIDGE. Authoritative tokens live in:
+     • design-tokens-base.css    (Syncfusion Material 3 — from GitHub develop)
+     • design-tokens-athena.css  (Athena brand layer — from GitHub develop)
+   Re-synced from: Athena-Git-Group/frontend-web-ERP/apps/web-erp/app/assets/css
+   This file adds: font loading + semantic aliases (--text-*, --bg-*, --border-*,
+   --radius-*, --space-*, --font-size-*, --shadow-*) that are consumed by
+   Components v3.html. If a preview references a new token, add an alias here and
+   keep the GitHub files as-is.
+   ============================================================================ */
+
+/* ---------- 1. Authoritative token files (source of truth) ---------- */
+@import url("design-tokens-base.css");
+@import url("design-tokens-athena.css");
+
+/* ---------- 2. Fonts ---------- */
+/* Primary: Google Fonts CDN (subsetted WOFF2). Fallback: self-hosted variable TTF. */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap");
+
+/* Local TTF fallbacks removed for web build — relying on Google Fonts CDN */
+
+/* ---------- 3. Semantic aliases (preview-only, map GitHub tokens → simple names) ---------- */
+:root {
+  /* === Typography === */
+  --font-family-zh: var(--font-family-sf-zh), "Noto Sans TC Local", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-family-en: var(--font-family-sf-en), "Roboto Local", "Helvetica Neue", Arial, sans-serif;
+  --font-family-base: var(--font-family-zh);
+  --font-family-mono: "JetBrains Mono", "Roboto Mono", ui-monospace, Menlo, monospace;
+
+  --font-size-xxs: var(--font-size-sf-text-xxs);
+  --font-size-xs:  var(--font-size-sf-text-xs);
+  --font-size-sm:  var(--font-size-sf-text-sm);
+  --font-size-md:  var(--font-size-sf-text-md);
+  --font-size-lg:  var(--font-size-sf-text-lg);
+  --font-size-h6:  var(--font-size-sf-h6);
+  --font-size-h5:  var(--font-size-sf-h5);
+  --font-size-h4:  var(--font-size-sf-h4);
+  --font-size-h3:  var(--font-size-sf-h3);
+  --font-size-h2:  var(--font-size-sf-h2);
+  --font-size-h1:  var(--font-size-sf-h1);
+
+  --font-weight-regular: var(--font-weight-sf-normal);
+  --font-weight-medium:  var(--font-weight-sf-medium);
+  --font-weight-bold:    var(--font-weight-sf-bold);
+
+  --line-height-tight: 1.3;
+  --line-height-normal: 1.5;
+  --letter-spacing-tight: 0.1px;
+  --letter-spacing-wide: 0.24px;
+
+  /* === Text color aliases === */
+  --text-primary:     rgb(var(--color-sf-on-surface));
+  --text-secondary:   rgb(var(--color-sf-on-surface-variant));
+  --text-placeholder: rgb(var(--ds-color-athena-placeholder));
+  --text-inverse:     rgb(var(--color-sf-inverse-on-surface));
+  --text-brand:       rgb(var(--color-sf-primary));
+  --text-error:       rgb(var(--color-sf-error));
+  --text-success:     rgb(var(--color-sf-success));
+  --text-warning:     rgb(var(--color-sf-warning));
+
+  /* === Background / surface aliases === */
+  --bg-surface-default: rgb(var(--color-sf-surface));
+  --bg-surface-variant: rgb(var(--color-sf-surface-variant));
+  --bg-surface-inverse: rgb(var(--color-sf-inverse-surface));
+  --bg-primary:         rgb(var(--color-sf-primary));
+  --bg-primary-tint:    rgb(var(--color-sf-primary-container));
+  --bg-app:             rgb(var(--color-sf-surface-variant));
+
+  /* === Border aliases === */
+  --border-default: rgb(var(--color-sf-outline-variant));
+  --border-strong:  rgb(var(--color-sf-outline));
+  --border-focus:   rgb(var(--color-sf-primary));
+
+  /* === Radius aliases (map --ds-corner-radius-athena-* → --radius-*) === */
+  --radius-none: var(--ds-corner-radius-athena-none);
+  --radius-xs:   var(--ds-corner-radius-athena-extra-small);
+  --radius-sm:   var(--ds-corner-radius-athena-small);
+  --radius-md:   var(--ds-corner-radius-athena-medium);
+  --radius-lg:   var(--ds-corner-radius-athena-large);
+  --radius-xl:   var(--ds-corner-radius-athena-extra-large);
+  --radius-2xl:  var(--ds-corner-radius-athena-2extra-large);
+  --radius-3xl:  var(--ds-corner-radius-athena-3extra-large);
+  --radius-4xl:  var(--ds-corner-radius-athena-4extra-large);
+  --radius-5xl:  var(--ds-corner-radius-athena-5extra-large);
+  --radius-6xl:  var(--ds-corner-radius-athena-6extra-large);
+  --radius-7xl:  var(--ds-corner-radius-athena-7extra-large);
+  --radius-8xl:  var(--ds-corner-radius-athena-8extra-large);
+  --radius-9xl:  var(--ds-corner-radius-athena-9extra-large);
+  --radius-full: var(--ds-corner-radius-athena-10extra-large);
+
+  /* === Spacing aliases (map --ds-space-athena-margin-* → --space-*) === */
+  --space-none: var(--ds-space-athena-margin-none);
+  --space-xs:   var(--ds-space-athena-margin-extra-small);
+  --space-sm:   var(--ds-space-athena-margin-small);
+  --space-md:   var(--ds-space-athena-margin-medium);
+  --space-lg:   var(--ds-space-athena-margin-large);
+  --space-xl:   var(--ds-space-athena-margin-extra-large);
+  --space-2xl:  var(--ds-space-athena-margin-2extra-large);
+  --space-3xl:  var(--ds-space-athena-margin-3extra-large);
+  --space-4xl:  var(--ds-space-athena-margin-4extra-large);
+  --space-5xl:  var(--ds-space-athena-margin-5extra-large);
+  --space-6xl:  var(--ds-space-athena-margin-6extra-large);
+  --space-7xl:  var(--ds-space-athena-margin-7extra-large);
+  --space-8xl:  var(--ds-space-athena-margin-8extra-large);
+
+  /* === Stroke / border widths === */
+  --stroke-none: var(--ds-stroke-athena-none);
+  --stroke-sm:   var(--ds-stroke-athena-small);
+  --stroke-md:   var(--ds-stroke-athena-medium);
+  --stroke-lg:   var(--ds-stroke-athena-large);
+
+  /* === Primary darken shortcuts (from base tokens) === */
+  --color-sf-primary-darken-5:  var(--color-sf-primary-darken-opacity-5);
+  --color-sf-primary-darken-10: var(--color-sf-primary-darken-opacity-10);
+
+  /* === Shadows (Material 3 elevation, preview-only) === */
+  --shadow-e1: 0 1px 2px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.10);
+  --shadow-e2: 0 2px 4px rgba(0,0,0,0.06), 0 3px 6px rgba(0,0,0,0.08);
+  --shadow-e3: 0 4px 8px rgba(0,0,0,0.08), 0 6px 12px rgba(0,0,0,0.08);
+  --shadow-e4: 0 8px 16px rgba(0,0,0,0.10), 0 12px 24px rgba(0,0,0,0.08);
+  --shadow-focus-ring: 0 0 0 4px rgba(40,119,238,0.16);
+}
+
+/* ---------- 4. Base body + semantic type classes ---------- */
+html, body {
+  font-family: var(--font-family-base);
+  color: var(--text-primary);
+  background: var(--bg-app);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+.h1 { font-size: var(--font-size-h1); font-weight: var(--font-weight-medium); line-height: 1.25; }
+.h2 { font-size: var(--font-size-h2); font-weight: var(--font-weight-medium); line-height: 1.3;  }
+.h3 { font-size: var(--font-size-h3); font-weight: var(--font-weight-medium); line-height: 1.3;  }
+.h4 { font-size: var(--font-size-h4); font-weight: var(--font-weight-medium); line-height: 1.35; }
+.h5 { font-size: var(--font-size-h5); font-weight: var(--font-weight-medium); line-height: 1.4;  }
+.h6 { font-size: var(--font-size-h6); font-weight: var(--font-weight-medium); line-height: 1.4;  }
+
+.body-lg  { font-size: var(--font-size-lg); font-weight: 400; line-height: 1.5; }
+.body     { font-size: var(--font-size-md); font-weight: 400; line-height: 1.5; }
+.body-sm  { font-size: var(--font-size-sm); font-weight: 400; line-height: 1.5; }
+.caption  { font-size: var(--font-size-xs); font-weight: 400; line-height: 1.4; color: var(--text-secondary); }
+.overline { font-size: var(--font-size-xxs); font-weight: 500; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-secondary); }
+.label    { font-size: var(--font-size-md); font-weight: 500; color: var(--text-secondary); }
+.code     { font-family: var(--font-family-mono); font-size: var(--font-size-sm); background: var(--bg-surface-variant); padding: 2px 6px; border-radius: var(--radius-sm); }

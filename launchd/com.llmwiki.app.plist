@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.llmwiki.app</string>
+
+  <!-- Use /usr/bin/env to locate `docker` via PATH below. Works on both
+       Intel (/usr/local/bin) and Apple Silicon (/opt/homebrew/bin) Macs. -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/env</string>
+    <string>docker</string>
+    <string>compose</string>
+    <string>--project-directory</string>
+    <string>/Users/leonl/Documents/llm-km</string>
+    <string>up</string>
+    <string>--remove-orphans</string>
+  </array>
+
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+
+  <key>StandardOutPath</key>
+  <string>/Users/leonl/Library/Logs/llm-wiki/docker-compose.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/leonl/Library/Logs/llm-wiki/docker-compose.err</string>
+
+  <key>StartInterval</key>
+  <integer>0</integer>
+  <key>ThrottleInterval</key>
+  <integer>30</integer>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+  </dict>
+</dict>
+</plist>

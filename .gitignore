@@ -1,0 +1,20 @@
+.env
+.env_bk
+.env.local
+.env.*.local
+.claude/settings.local.json
+certs/fullchain.pem
+certs/privkey.pem
+data/
+__pycache__/
+*.pyc
+.DS_Store
+frontend/node_modules/
+frontend/.next/
+
+# Claude Code auto-memory residue（正本在 ~/.claude/projects/.../memory/）
+MEMORY.md
+feedback_wiki_images.md
+project_llm_wiki_setup.md
+reference_google_drive.md
+user_profile.md

@@ -1,0 +1,114 @@
+/* Color */
+:root {
+  /* Athena_Light */
+  /* color */
+  --ds-color-athena-blue: 0, 133, 255;
+  --ds-color-athena-cream: 255, 236, 189;
+  --ds-color-athena-green: 5, 187, 61;
+  --ds-color-athena-lavender: 220, 204, 255;
+  --ds-color-athena-mint: 205, 244, 211;
+  --ds-color-athena-neutral-dark: 60, 74, 91;
+  --ds-color-athena-neutral-light: 215, 218, 224;
+  --ds-color-athena-orange: 255, 158, 66;
+  --ds-color-athena-peach: 255, 224, 194;
+  --ds-color-athena-pink: 244, 195, 199;
+  --ds-color-athena-purple: 113, 7, 220;
+  --ds-color-athena-red: 210, 16, 32;
+  --ds-color-athena-sky-blue: 194, 229, 255;
+  --ds-color-athena-yellow: 250, 210, 0;
+  --ds-color-athena-placeholder: 103, 113, 126;
+  --ds-color-athena-view: 32, 165, 109;
+}
+/* Stroke */
+:root {
+  /* Athena_Default */
+  /* number */
+  --ds-stroke-athena-none: 0px;
+  --ds-stroke-athena-small: 1px;
+  --ds-stroke-athena-medium: 2px;
+  --ds-stroke-athena-large: 4px;
+}
+
+/* Space */
+:root {
+  /* Athena_Default */
+  /* number */
+  --ds-space-athena-margin-none: 0px;
+  --ds-space-athena-margin-extra-small: 2px;
+  --ds-space-athena-margin-small: 4px;
+  --ds-space-athena-margin-medium: 8px;
+  --ds-space-athena-margin-large: 12px;
+  --ds-space-athena-margin-extra-large: 16px;
+  --ds-space-athena-margin-2extra-large: 20px;
+  --ds-space-athena-margin-3extra-large: 24px;
+  --ds-space-athena-margin-4extra-large: 32px;
+  --ds-space-athena-margin-5extra-large: 40px;
+  --ds-space-athena-margin-6extra-large: 48px;
+  --ds-space-athena-margin-7extra-large: 56px;
+  --ds-space-athena-margin-8extra-large: 64px;
+  --ds-space-athena-padding-none: 0px;
+  --ds-space-athena-padding-extra-small: 2px;
+  --ds-space-athena-padding-small: 4px;
+  --ds-space-athena-padding-medium: 8px;
+  --ds-space-athena-padding-large: 12px;
+  --ds-space-athena-padding-extra-large: 16px;
+  --ds-space-athena-padding-2extra-large: 20px;
+  --ds-space-athena-padding-3extra-large: 24px;
+  --ds-space-athena-padding-4extra-large: 32px;
+  --ds-space-athena-padding-5extra-large: 40px;
+  --ds-space-athena-padding-6extra-large: 48px;
+  --ds-space-athena-padding-7extra-large: 56px;
+  --ds-space-athena-padding-8extra-large: 64px;
+}
+
+:root[data-density="comfortable"] {
+  /* Athena_Comfortable */
+  /* number */
+  --ds-space-athena-margin-none: 0px;
+  --ds-space-athena-margin-extra-small: 4px;
+  --ds-space-athena-margin-small: 8px;
+  --ds-space-athena-margin-medium: 12px;
+  --ds-space-athena-margin-large: 16px;
+  --ds-space-athena-margin-extra-large: 20px;
+  --ds-space-athena-margin-2extra-large: 24px;
+  --ds-space-athena-margin-3extra-large: 32px;
+  --ds-space-athena-margin-4extra-large: 40px;
+  --ds-space-athena-margin-5extra-large: 48px;
+  --ds-space-athena-margin-6extra-large: 56px;
+  --ds-space-athena-margin-7extra-large: 64px;
+  --ds-space-athena-margin-8extra-large: 72px;
+  --ds-space-athena-padding-none: 0px;
+  --ds-space-athena-padding-extra-small: 4px;
+  --ds-space-athena-padding-small: 8px;
+  --ds-space-athena-padding-medium: 12px;
+  --ds-space-athena-padding-large: 16px;
+  --ds-space-athena-padding-extra-large: 20px;
+  --ds-space-athena-padding-2extra-large: 24px;
+  --ds-space-athena-padding-3extra-large: 32px;
+  --ds-space-athena-padding-4extra-large: 40px;
+  --ds-space-athena-padding-5extra-large: 48px;
+  --ds-space-athena-padding-6extra-large: 56px;
+  --ds-space-athena-padding-7extra-large: 64px;
+  --ds-space-athena-padding-8extra-large: 72px;
+}
+
+/* Corner-radius */
+:root {
+  /* Athena_Default */
+  /* number */
+  --ds-corner-radius-athena-none: 0px;
+  --ds-corner-radius-athena-extra-small: 2px;
+  --ds-corner-radius-athena-small: 4px;
+  --ds-corner-radius-athena-medium: 6px;
+  --ds-corner-radius-athena-large: 8px;
+  --ds-corner-radius-athena-extra-large: 12px;
+  --ds-corner-radius-athena-2extra-large: 16px;
+  --ds-corner-radius-athena-3extra-large: 18px;
+  --ds-corner-radius-athena-4extra-large: 20px;
+  --ds-corner-radius-athena-5extra-large: 24px;
+  --ds-corner-radius-athena-6extra-large: 32px;
+  --ds-corner-radius-athena-7extra-large: 36px;
+  --ds-corner-radius-athena-8extra-large: 40px;
+  --ds-corner-radius-athena-9extra-large: 48px;
+  --ds-corner-radius-athena-10extra-large: 1000px;
+}
