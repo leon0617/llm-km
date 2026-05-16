@@ -63,6 +63,7 @@ class Settings(BaseSettings):
     cookie_secure: bool = True
 
     ocr_service_url: str = ""
+    ocr_container_name: str = "smartledger-paddleocr"
 
     # ── Active Directory (optional) ───────────────────────────────────────
     # When AD_ENABLED is false (default), only local password accounts can log in.

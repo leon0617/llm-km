@@ -13,6 +13,40 @@ from app.storage import wiki_fs
 from app.storage import audit
 
 
+async def _ocr_container_start() -> None:
+    if not settings.ocr_container_name or not settings.ocr_service_url:
+        return
+    try:
+        import docker as docker_sdk
+        client = await asyncio.to_thread(docker_sdk.from_env)
+        container = await asyncio.to_thread(client.containers.get, settings.ocr_container_name)
+        if container.status != "running":
+            await asyncio.to_thread(container.start)
+        async with httpx.AsyncClient(timeout=5) as hc:
+            for _ in range(60):
+                await asyncio.sleep(3)
+                try:
+                    r = await hc.get(f"{settings.ocr_service_url}/health")
+                    if r.status_code == 200:
+                        return
+                except Exception:
+                    pass
+    except Exception:
+        pass
+
+
+async def _ocr_container_stop() -> None:
+    if not settings.ocr_container_name:
+        return
+    try:
+        import docker as docker_sdk
+        client = await asyncio.to_thread(docker_sdk.from_env)
+        container = await asyncio.to_thread(client.containers.get, settings.ocr_container_name)
+        await asyncio.to_thread(container.stop)
+    except Exception:
+        pass
+
+
 async def _ocr_png(png_path: Path) -> str:
     if not settings.ocr_service_url:
         return ""
@@ -88,15 +122,22 @@ async def run_ingest(job_id: str, file_path: Path, filename: str) -> None:
             )
             if is_scanned and png_names and settings.ocr_service_url:
                 log(f"PDF 文字層幾乎為空或重複（總字數 {total_chars}，唯一頁數 {unique_pages}），啟用 OCR 辨識…")
+                job_store.update_job(job_id, step="啟動 OCR 服務", progress=0.33)
+                await _ocr_container_start()
+                log("OCR 服務已就緒")
                 job_store.update_job(job_id, step="OCR 辨識中", progress=0.35)
                 assets_dir = settings.raw_dir / "assets"
                 ocr_texts: list[str] = []
-                for i, png_name in enumerate(png_names):
-                    png_path_ocr = assets_dir / png_name
-                    text = await _ocr_png(png_path_ocr)
-                    ocr_texts.append(text)
-                    if (i + 1) % 10 == 0:
-                        log(f"OCR 進度：{i+1}/{len(png_names)} 頁")
+                try:
+                    for i, png_name in enumerate(png_names):
+                        png_path_ocr = assets_dir / png_name
+                        text = await _ocr_png(png_path_ocr)
+                        ocr_texts.append(text)
+                        if (i + 1) % 10 == 0:
+                            log(f"OCR 進度：{i+1}/{len(png_names)} 頁")
+                finally:
+                    log("停止 OCR 服務以釋放記憶體")
+                    await _ocr_container_stop()
                 page_texts = ocr_texts
                 log(f"OCR 完成：共 {len(page_texts)} 頁")
 
