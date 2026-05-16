@@ -1,40 +1,37 @@
 services:
-  nginx:
-    image: nginx:1.27-alpine
-    ports:
-      - "8077:80"
-      - "10443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
-      - ./certs:/etc/nginx/certs:ro
-      - nginx_logs:/var/log/nginx
-    depends_on:
-      - frontend
-      - backend
-    restart: unless-stopped
-
   frontend:
     build: ./frontend
+    container_name: llm-km-frontend-1
     environment:
       - NEXT_PUBLIC_API_BASE=/api
       - INTERNAL_API_BASE=http://backend:8000/api
+      - HOSTNAME=0.0.0.0
     depends_on:
       - backend
     restart: unless-stopped
+    networks:
+      - default
+      - nginx-network
 
   backend:
     build: ./backend
+    container_name: llm-km-backend-1
     env_file: .env
     environment:
       - WIKI_DATA_DIR=/data
-      - CORS_ORIGINS=http://localhost:3000,https://llm-wiki.example.com
+      - CORS_ORIGINS=https://leonl-km.lbest.online
       - OCR_SERVICE_URL=http://smartledger-paddleocr:8000
     volumes:
       - ./data:/data
     extra_hosts:
       - "host.docker.internal:host-gateway"
     restart: unless-stopped
+    networks:
+      - default
+      - nginx-network
 
-volumes:
-  nginx_logs:
+networks:
+  default:
+  nginx-network:
+    external: true
+    name: nginx_nginx-network
